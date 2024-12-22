@@ -83,7 +83,7 @@ class StormStaff extends Staff {
 class Player {
     constructor(position, name) {
         this.position = position;
-        this.name = name || this.getRandomName();
+        this.name = name
         this.life = 100;
         this.magic = 20;
         this.speed = 1;
@@ -91,11 +91,6 @@ class Player {
         this.agility = 5;
         this.luck = 10;
         this.weapon = new Arm();
-    }
-
-    getRandomName() {
-        const names = ["Игрок1", "Игрок2", "Игрок3"];
-        return names[Math.floor(Math.random() * names.length)];
     }
 
     getLuck() {
@@ -137,9 +132,6 @@ class Player {
         this.checkWeapon();
 
         let damage = this.getDamage(distance);
-
-        // Лог атаки
-        console.log(`[ЛОГ АТАКИ] ${this.name}: Урон = ${damage.toFixed(2)}, Дистанция = ${distance}, Оружие = ${this.weapon.name}, Прочность оружия = ${this.weapon.durability.toFixed(2)}`);
 
         if (this.position === enemy.position) {
             console.log(`${this.name} атакует вблизи! Урон удваивается.`);
@@ -273,8 +265,7 @@ class Mage extends Player {
     }
 }
 
-
-
+// Наследуемые классы игроков улучшенные
 class Dwarf extends Player {
     constructor(position, name) {
         super(position, name);
@@ -283,21 +274,25 @@ class Dwarf extends Player {
         this.luck = 20;
         this.description = "Гном";
         this.weapon = new Axe();
-        this.attackCount = 0; // Счетчик ударов
+        this.attackCount = 0;
     }
 
-    takeDamage(damage) {
-        this.attackCount++; // Увеличиваем счетчик при каждом ударе
+    takeAttack(damage) {
+        this.attackCount++;
+
         if (this.attackCount % 6 === 0) {
-            console.log(`${this.name} отразил удар! (тк. он шестой)`);
-            return; // Отражение удара, урон не наносится
+            if (this.getLuck() > 0.5) {
+                damage = damage / 2; // Урон уменьшается вдвое
+                console.log(`${this.name} отражает часть удара! Урон снижен вдвое до ${damage.toFixed(2)}.`);
+            } else {
+                console.log(`${this.name} не удалось отразить удар.`);
+            }
         }
 
-        this.health -= damage;
-        console.log(`${this.name} получает ${damage} урона. Осталось здоровья: ${this.health}`);
+        this.life = Math.max(this.life - damage, 0);
+        console.log(`${this.name} получает ${damage.toFixed(2)} урона. Осталось здоровья: ${this.life}.`);
     }
 }
-
 
 class Crossbowman extends Archer {
     constructor(position, name) {
